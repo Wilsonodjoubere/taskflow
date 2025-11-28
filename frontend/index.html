@@ -1,0 +1,501 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow - Gestionnaire de Tâches</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+            align-items: start;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        
+        .card h2 {
+            color: #1f2937;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #374151;
+            font-weight: 600;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+        
+        .task-list {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .task-item {
+            border: 2px solid #e5e7eb;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        
+        .task-item:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        .task-item.completed {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+        }
+        
+        .task-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin: 0;
+        }
+        
+        .task-item.completed .task-title {
+            text-decoration: line-through;
+            color: #6b7280;
+        }
+        
+        .task-description {
+            color: #6b7280;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .task-meta {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .priority {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .priority-high {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+        
+        .priority-medium {
+            background: #fffbeb;
+            color: #d97706;
+        }
+        
+        .priority-low {
+            background: #f0fdf4;
+            color: #059669;
+        }
+        
+        .task-date {
+            color: #9ca3af;
+            font-size: 14px;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-icon {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-toggle {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-toggle:hover {
+            background: #059669;
+        }
+        
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6b7280;
+        }
+        
+        .empty-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+        
+        .task-count {
+            background: #3b82f6;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>TaskFlow</h1>
+            <p>Votre gestionnaire de tâches simple et efficace</p>
+        </div>
+
+        <div class="grid">
+            <!-- Formulaire de création -->
+            <div class="card">
+                <h2>Nouvelle Tâche</h2>
+                <form id="taskForm">
+                    <div class="form-group">
+                        <label for="title">Titre *</label>
+                        <input type="text" id="title" required placeholder="Que devez-vous faire ?">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description" placeholder="Détails supplémentaires..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="priority">Priorité</label>
+                        <select id="priority">
+                            <option value="low">Basse</option>
+                            <option value="medium" selected>Moyenne</option>
+                            <option value="high">Haute</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn-primary">
+                        ➕ Ajouter la Tâche
+                    </button>
+                </form>
+            </div>
+
+            <!-- Liste des tâches -->
+            <div class="card">
+                <h2>
+                    Mes Tâches 
+                    <span class="task-count" id="taskCount">0</span>
+                </h2>
+                
+                <div class="task-list" id="taskList">
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <h3>Aucune tâche pour le moment</h3>
+                        <p>Commencez par ajouter votre première tâche !</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000/api';
+        let tasks = [];
+
+        // Charger les tâches au démarrage
+        document.addEventListener('DOMContentLoaded', loadTasks);
+
+        // Gérer la soumission du formulaire
+        document.getElementById('taskForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const title = document.getElementById('title').value.trim();
+            const description = document.getElementById('description').value.trim();
+            const priority = document.getElementById('priority').value;
+
+            if (!title) {
+                alert('Veuillez saisir un titre pour la tâche');
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL + '/tasks', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        title,
+                        description,
+                        priority
+                    })
+                });
+
+                if (response.ok) {
+                    // Réinitialiser le formulaire
+                    document.getElementById('title').value = '';
+                    document.getElementById('description').value = '';
+                    document.getElementById('priority').value = 'medium';
+                    
+                    // Recharger les tâches
+                    loadTasks();
+                } else {
+                    const error = await response.json();
+                    alert('Erreur: ' + error.error);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur de connexion au serveur');
+            }
+        });
+
+        // Charger les tâches
+        async function loadTasks() {
+            try {
+                const response = await fetch(API_URL + '/tasks');
+                if (response.ok) {
+                    tasks = await response.json();
+                    displayTasks();
+                }
+            } catch (error) {
+                console.error('Erreur de chargement:', error);
+            }
+        }
+
+        // Afficher les tâches
+        function displayTasks() {
+            const taskList = document.getElementById('taskList');
+            const taskCount = document.getElementById('taskCount');
+            
+            taskCount.textContent = tasks.length;
+
+            if (tasks.length === 0) {
+                taskList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <h3>Aucune tâche pour le moment</h3>
+                        <p>Commencez par ajouter votre première tâche !</p>
+                    </div>
+                `;
+                return;
+            }
+
+            taskList.innerHTML = tasks.map(task => `
+                <div class="task-item ${task.completed ? 'completed' : ''}">
+                    <div class="task-header">
+                        <h3 class="task-title">${escapeHtml(task.title)}</h3>
+                    </div>
+                    
+                    ${task.description ? `
+                        <p class="task-description">${escapeHtml(task.description)}</p>
+                    ` : ''}
+                    
+                    <div class="task-meta">
+                        <span class="priority priority-${task.priority}">
+                            ${task.priority === 'high' ? 'Haute' : 
+                              task.priority === 'medium' ? 'Moyenne' : 'Basse'} Priorité
+                        </span>
+                        <span class="task-date">
+                            ${new Date(task.createdAt).toLocaleDateString('fr-FR', {
+                                day: 'numeric',
+                                month: 'long',
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit'
+                            })}
+                        </span>
+                    </div>
+                    
+                    <div class="task-actions">
+                        <button class="btn-icon btn-toggle" 
+                                onclick="toggleTask('${task.id}', ${task.completed})">
+                            ${task.completed ? '↶ Rétablir' : '✅ Terminer'}
+                        </button>
+                        <button class="btn-icon btn-delete" 
+                                onclick="deleteTask('${task.id}')">
+                            🗑️ Supprimer
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Basculer l'état d'une tâche
+        async function toggleTask(id, completed) {
+            try {
+                const response = await fetch(API_URL + '/tasks/' + id, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        completed: !completed
+                    })
+                });
+
+                if (response.ok) {
+                    loadTasks();
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la mise à jour');
+            }
+        }
+
+        // Supprimer une tâche
+        async function deleteTask(id) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette tâche ?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(API_URL + '/tasks/' + id, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    loadTasks();
+                alert('Tâche supprimée avec succès');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('Erreur lors de la suppression');
+            }
+        }
+
+        // Échapper le HTML pour la sécurité
+        function escapeHtml(unsafe) {
+            return unsafe
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Recharger les tâches toutes les 30 secondes
+        setInterval(loadTasks, 30000);
+    </script>
+</body>
+</html>
+'@ | Out-File -FilePath index.html -Encoding utf8
+
+# Ouvrir dans le navigateur
+start index.html
