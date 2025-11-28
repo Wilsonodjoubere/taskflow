@@ -1,9 +1,9 @@
-﻿import { readFileSync, writeFileSync, existsSync } from 'fs';
-import { join } from 'path';
+﻿const { readFileSync, writeFileSync, existsSync } = require('fs');
+const { join } = require('path');
 
 const DB_FILE = join('/tmp', 'tasks.json');
 
-export default function handler(req, res) {
+module.exports = function handler(req, res) {
   // CORS headers
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
@@ -89,4 +89,4 @@ export default function handler(req, res) {
   }
 
   return res.status(404).json({ error: 'Method not allowed' });
-}
+};
