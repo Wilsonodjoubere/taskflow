@@ -316,7 +316,7 @@
     </div>
 
     <script>
-        const API_URL = 'http://localhost:5000/api';
+        const API_URL = '/api';
         let tasks = [];
 
         // Charger les tâches au démarrage
@@ -336,7 +336,7 @@
             }
 
             try {
-                const response = await fetch(API_URL + '/tasks', {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -369,7 +369,7 @@
         // Charger les tâches
         async function loadTasks() {
             try {
-                const response = await fetch(API_URL + '/tasks');
+                const response = await fetch(API_URL);
                 if (response.ok) {
                     tasks = await response.json();
                     displayTasks();
@@ -440,12 +440,13 @@
         // Basculer l'état d'une tâche
         async function toggleTask(id, completed) {
             try {
-                const response = await fetch(API_URL + '/tasks/' + id, {
+                const response = await fetch(API_URL, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
+                        id: id,
                         completed: !completed
                     })
                 });
@@ -466,13 +467,19 @@
             }
 
             try {
-                const response = await fetch(API_URL + '/tasks/' + id, {
-                    method: 'DELETE'
+                const response = await fetch(API_URL, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        id: id
+                    })
                 });
 
                 if (response.ok) {
                     loadTasks();
-                alert('Tâche supprimée avec succès');
+                    alert('Tâche supprimée avec succès');
                 }
             } catch (error) {
                 console.error('Erreur:', error);
@@ -495,4 +502,4 @@
     </script>
 </body>
 </html>
-
+'
