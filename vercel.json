@@ -1,4 +1,6 @@
-﻿{
+﻿# Dans le dossier taskflow
+@'
+{
   "version": 2,
   "builds": [
     {
@@ -6,7 +8,7 @@
       "use": "@vercel/static"
     },
     {
-      "src": "api/**/*.js",
+      "src": "api/**/*.js", 
       "use": "@vercel/node"
     }
   ],
@@ -21,3 +23,4 @@
     }
   ]
 }
+'@ | Out-File -FilePath vercel.json -Encoding utf8 -Force
